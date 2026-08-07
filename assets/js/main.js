@@ -26,7 +26,7 @@ grid.insertAdjacentHTML("beforeend",`
 <div class="catalog-info">
 <h2>${item[0]}</h2>
 <p class="year">2025</p>
-<a class="view-btn" target="_blank" rel="noopener noreferrer" href="mailto:sales1@onishopfitting.com">Download <span aria-hidden="true">&#8595;</span></a>
+<a class="view-btn" target="_blank" rel="noopener noreferrer" href="https://www.onidisplay.com/contact/">Download <span aria-hidden="true">&#8595;</span></a>
 </div>
 </article>`);
 });
