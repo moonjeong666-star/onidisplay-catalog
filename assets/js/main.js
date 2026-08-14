@@ -8,7 +8,7 @@ const catalogs=[
 ["ONI Cosmetics & Perfume Display Cabinet Catalog","assets/pdf/ONI_Cosmetics_Perfume_Display_Catalog.pdf","cosmetics-cover.webp"],
 ["ONI Coffee Shop Display Catalog","assets/pdf/ONI_Coffee_Shop_Display_Catalog.pdf","coffee-cover.webp"],
 ["ONI Watch Display Cabinet Catalog","assets/pdf/ONI_Luxury_Watch_Display_Solutions_Catalog.pdf","watch-cover.webp"],
-["ONI Watch Display Cabinet Catalog","assets/pdf/GUANGZHOU ONI SHOPFITTING LIMITED.pdf","oni company"],
+["ONI Watch Display Cabinet Catalog","assets/pdf/GUANGZHOU ONI SHOPFITTING LIMITED.pdf","oni company.webp"],
 ["ONI Watch Display Cabinet Catalog","assets/pdf/ONI jewelry showcase catalog","custom jewelry showcases.webp"]
 ];
 
