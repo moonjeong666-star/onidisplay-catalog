@@ -14,7 +14,8 @@ const catalogs=[
 ["ONI Cinema & Entertainment Retail Fixture Solutions Catalog","assets/pdf/ONI Cinema & Entertainment Retail Fixture Solutions.pdf","cinema&entertainment.webp"],
 ["ONI Wig Shop Display Catalog","assets/pdf/ONI Shopfitting Retail Display Solutions for Wig Shops.pdf","win store.webp"],
 ["ONI Dessert Shop Display Catalog","assets/pdf/ONI Shopfitting Retail Display Solutions for Dessert Shops.pdf","dessert store.webp"],
-["ONI Mattress & Bedding Retail Portfolio Catalog","assets/pdf/Mattress & Bedding Retail Portfolio1.pdf","Mattress & Bedding Retail Portfolio.webp"]
+["ONI Mattress & Bedding Retail Portfolio Catalog","assets/pdf/Mattress & Bedding Retail Portfolio1.pdf","Mattress & Bedding Retail Portfolio.webp"],
+["ONI Wood Grain·Color Chart catalog","assets/pdf/ONI Wood Grain·Color Chart catalog.pdf","wood grain·color chart.webp"]
 ];
 
 const grid=document.querySelector(".catalog-grid");
