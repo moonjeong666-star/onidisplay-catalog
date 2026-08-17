@@ -8,15 +8,15 @@ const catalogs=[
 ["ONI Cosmetics & Perfume Display Cabinet Catalog","assets/pdf/ONI_Cosmetics_Perfume_Display_Catalog.pdf","cosmetics-cover.webp"],
 ["ONI Coffee Shop Display Catalog","assets/pdf/ONI_Coffee_Shop_Display_Catalog.pdf","coffee-cover.webp"],
 ["ONI Watch Display Cabinet Catalog","assets/pdf/ONI_Luxury_Watch_Display_Solutions_Catalog.pdf","watch-cover.webp"],
-["GUANGZHOU ONI SHOPFITTING LIMITED","assets/pdf/GUANGZHOU ONI SHOPFITTING LIMITED.pdf","oni company.webp"],
-["ONI jewelry showcase catalog","assets/pdf/ONI jewelry showcase catalog.pdf","custom jewelry showcases.webp"],
+["GUANGZHOU ONI SHOPFITTING LIMITED","assets/pdf/GUANGZHOU_ONI_SHOPFITTING_LIMITED.pdf","oni company.webp"],
+["ONI jewelry showcase catalog","assets/pdf/ONI_jewelry_showcase_catalog.pdf","custom jewelry showcases.webp"],
 ["ONI Duty Free Project Catalog","assets/pdf/ONI_Airport_Duty_Free_Project_Portfolio_with_Factory_Cases.pdf","dury free.webp"],
-["ONI Cinema & Entertainment Retail Fixture Solutions Catalog","assets/pdf/ONI Cinema & Entertainment Retail Fixture Solutions.pdf","cinema&entertainment.webp"],
-["ONI Wig Shop Display Catalog","assets/pdf/ONI Shopfitting Retail Display Solutions for Wig Shops.pdf","win store.webp"],
-["ONI Dessert Shop Display Catalog","assets/pdf/ONI Shopfitting Retail Display Solutions for Dessert Shops.pdf","dessert store.webp"],
-["ONI Mattress & Bedding Retail Portfolio Catalog","assets/pdf/Mattress & Bedding Retail Portfolio1.pdf","Mattress & Bedding Retail Portfolio.webp"],
-["ONI Wood Grain·Color Chart catalog","assets/pdf/ONI Wood Grain·Color Chart catalog.pdf","wood grain·color chart.webp"],
-["ONI Luxry Production Project Case","assets/pdf/ONI Luxry Production Project Case.pdf","luxry production line project case.webp"],
+["ONI Cinema & Entertainment Retail Fixture Solutions Catalog","assets/pdf/ONI_Cinema&Entertainment_Retail_Fixture_Solutions.pdf","cinema&entertainment.webp"],
+["ONI Wig Shop Display Catalog","assets/pdf/ONI_Shopfitting_Retail_Display_Solutions_for_Wig_Shops.pdf","win store.webp"],
+["ONI Dessert Shop Display Catalog","assets/pdf/ONI_Shopfitting_Retail_Display_Solutions_for_Dessert_Shops.pdf","dessert store.webp"],
+["ONI Mattress & Bedding Retail Portfolio Catalog","assets/pdf/Mattress&BeddingI_RetailI_Portfolio1.pdf","Mattress & Bedding Retail Portfolio.webp"],
+["ONI Wood Grain·Color Chart catalog","assets/pdf/ONI_Wood_Grain·Color_Chart_catalog.pdf","wood grain·color chart.webp"],
+["ONI Luxry Production Project Case","assets/pdf/ONI_Luxry_Production_Project_Case.pdf","luxry production line project case.webp"],
 ];
 
 const grid=document.querySelector(".catalog-grid");
