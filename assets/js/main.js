@@ -16,7 +16,7 @@ const catalogs=[
 ["ONI Dessert Shop Display Catalog","assets/pdf/ONI_Shopfitting_Retail_Display_Solutions_for_Dessert_Shops.pdf","dessert store.webp"],
 ["ONI Mattress & Bedding Retail Portfolio Catalog","assets/pdf/Mattress&BeddingI_RetailI_Portfolio1.pdf","Mattress & Bedding Retail Portfolio.webp"],
 ["ONI Wood Grain·Color Chart catalog","assets/pdf/ONI_Wood_Grain·Color_Chart_catalog.pdf","wood grain·color chart.webp"],
-["ONI Luxry Production Project Case","assets/pdf/ONI_Luxry_Production_Project_Case.pdf","luxry production line project case.webp"],
+["ONI Luxry Production Project Case","assets/pdf/ONI_Luxry_Production_Project_Case.pdf","luxry production line project case.webp"]
 ];
 
 const grid=document.querySelector(".catalog-grid");
