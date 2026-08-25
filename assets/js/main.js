@@ -18,7 +18,8 @@ const catalogs=[
 ["ONI Wood Grain·Color Chart catalog","assets/pdf/ONI_Wood_Grain·Color_Chart_catalog.pdf","wood grain·color chart.webp"],
 ["ONI Luxry Production Project Case","assets/pdf/ONI_Luxry_Production_Project_Case.pdf","luxry production line project case.webp"],
 ["What to prepare for Store Design & Fixture Production","assets/pdf/What_to_prepare_for_Store_Design&Fixture_Production.pdf","Store Design & Fixture Production.webp"],
-["What ONI Do for Retailers 2026","assets/pdf/What_ONI_Do_for_Retailers_2026.pdf","What ONI Do for Retailers 2026.webp"]
+["What ONI Do for Retailers 2026","assets/pdf/What_ONI_Do_for_Retailers_2026.pdf","What ONI Do for Retailers 2026.webp"],
+["Guangzhou ONI Shop Design Price List","assets/pdf/Guangzhou_ONI_Shop_Design_Price_List.pdf","Shop Design.webp"]
 ];
 
 const grid=document.querySelector(".catalog-grid");
