@@ -61,7 +61,14 @@ body {
 .contact-btn:hover {
     opacity: 0.85;
 }
-
+.catalog-banner {
+    position: relative;
+    width: 100%;
+    height: clamp(330px, 28vw, 722px);
+    overflow: hidden;
+    background: #d8d6d3;
+    color: #fff;
+}
 .catalog-banner > img {
     display: block;
     width: 100%;
