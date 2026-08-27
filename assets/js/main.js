@@ -2,6 +2,7 @@ const library = {
     catalog: {
         label: "Catalog",
         items: [
+            ["Guangzhou ONI Shopfitting Limited", "assets/pdf/GUANGZHOU_ONI_SHOPFITTING_LIMITED.pdf", "oni company.webp"],
             ["ONI Restaurant Furniture Catalog", "assets/pdf/ONI_Restaurant_Furniture_Catalog.pdf", "restaurant-cover.webp"],
             ["ONI Shopfitting Clothing Shop Display Catalog", "assets/pdf/ONI_Clothing_Display_Catalog.pdf", "clothing-cover.webp"],
             ["ONI Optical Shop Display Catalog", "assets/pdf/ONI_Optical_Shop_Display_Catalog.pdf", "optical-cover.webp"],
@@ -17,13 +18,15 @@ const library = {
             ["ONI Wig Shop Display Catalog", "assets/pdf/ONI_Shopfitting_Retail_Display_Solutions_for_Wig_Shops.pdf", "win store.webp"],
             ["ONI Dessert Shop Display Catalog", "assets/pdf/ONI_Shopfitting_Retail_Display_Solutions_for_Dessert_Shops.pdf", "dessert store.webp"],
             ["ONI Mattress & Bedding Retail Portfolio Catalog", "assets/pdf/Mattress&BeddingI_RetailI_Portfolio1.pdf", "Mattress & Bedding Retail Portfolio.webp"],
-            ["ONI Wood Grain · Color Chart Catalog", "assets/pdf/ONI_Wood_Grain·Color_Chart_catalog.pdf", "wood grain·color chart.webp"]
+            ["ONI Wood Grain · Color Chart Catalog", "assets/pdf/ONI_Wood_Grain·Color_Chart_catalog.pdf", "wood grain·color chart.webp"],
+            ["ONI Luxury Production Project Case", "assets/pdf/ONI_Luxry_Production_Project_Case.pdf", "luxry production line project case.webp"],
+            ["What to Prepare for Store Design & Fixture Production", "assets/pdf/What_to_prepare_for_Store_Design&Fixture_Production.pdf", "Store Design & Fixture Production.webp"],
+            ["What ONI Do for Retailers 2026", "assets/pdf/What_ONI_Do_for_Retailers_2026.pdf", "What ONI Do for Retailers 2026.webp"]
         ]
     },
     documents: {
         label: "Documents",
         items: [
-            ["Guangzhou ONI Shopfitting Limited", "assets/pdf/GUANGZHOU_ONI_SHOPFITTING_LIMITED.pdf", "oni company.webp"],
             ["Guangzhou ONI Shop Design Price List", "assets/pdf/Guangzhou_ONI_Shop_Design_Price_List.pdf", "Shop Design.webp"],
             ["ONI Commercial Space Design Pricing Guide", "assets/pdf/ONI_Commercial_Space_Design_Pricing_Guide.pdf", "ONI Commercial Space Design Pricing Guide.webp"],
             ["ONI Final Drawing and Material Approval Notice", "assets/pdf/ONI_Final_Drawing_and_Material_Approval_Notice.pdf", "ONI_Final_Drawing_and_Material_Approval_Notice.webp"]
@@ -32,9 +35,7 @@ const library = {
     resources: {
         label: "Resources",
         items: [
-            ["ONI Luxury Production Project Case", "assets/pdf/ONI_Luxry_Production_Project_Case.pdf", "luxry production line project case.webp"],
-            ["What to Prepare for Store Design & Fixture Production", "assets/pdf/What_to_prepare_for_Store_Design&Fixture_Production.pdf", "Store Design & Fixture Production.webp"],
-            ["What ONI Do for Retailers 2026", "assets/pdf/What_ONI_Do_for_Retailers_2026.pdf", "What ONI Do for Retailers 2026.webp"]
+           
         ]
     }
 };
