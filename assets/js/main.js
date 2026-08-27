@@ -36,7 +36,10 @@ const library = {
     resources: {
         label: "Resources",
         items: [
-           
+            ["CICI Business card", "#", "CICI Business card.jpg"],
+            ["Olivia Business card", "#", "Olivia Business card.jpg"],
+            ["Alice Business card", "#", "Alice Business card.jpg"],
+             ["Rechel Business card", "#", "Rechel Business card.jpg"]
         ]
     }
 };
