@@ -30,24 +30,55 @@ const library = {
             ["Guangzhou ONI Shop Design Price List", "assets/pdf/Guangzhou_ONI_Shop_Design_Price_List.pdf", "Shop Design.webp"],
             ["ONI Commercial Space Design Pricing Guide", "assets/pdf/ONI_Commercial_Space_Design_Pricing_Guide.pdf", "ONI Commercial Space Design Pricing Guide.webp"],
             ["ONI Final Drawing and Material Approval Notice", "assets/pdf/ONI_Final_Drawing_and_Material_Approval_Notice.pdf", "ONI_Final_Drawing_and_Material_Approval_Notice.webp"]
-            
         ]
     },
     resources: {
         label: "Resources",
         items: [
-            ["CICI Business card", "#", "CICI Business card.jpg"],
-            ["Olivia Business card", "#", "Olivia Business card.jpg"],
-            ["Alice Business card", "#", "Alice Business card.jpg"],
-             ["Rechel Business card", "#", "Rechel Business card.jpg"]
+            ["CICI Business card", "#", "CICI Business card.jpg", "image"],
+            ["Olivia Business card", "#", "Olivia Business card.jpg", "image"],
+            ["Alice Business card", "#", "Alice Business card.jpg", "image"],
+            ["Rechel Business card", "#", "Rechel Business card.jpg", "image"]
         ]
     }
 };
 
+const lightboxStyles = document.createElement("link");
+lightboxStyles.rel = "stylesheet";
+lightboxStyles.href = "assets/css/lightbox.css";
+document.head.append(lightboxStyles);
+
+const lightbox = document.createElement("dialog");
+lightbox.className = "image-lightbox";
+lightbox.setAttribute("aria-labelledby", "image-lightbox-caption");
+lightbox.innerHTML = `
+    <div class="image-lightbox-content">
+        <button class="image-lightbox-close" type="button" aria-label="Close image preview">&#215;</button>
+        <img class="image-lightbox-image" alt="">
+        <p class="image-lightbox-caption" id="image-lightbox-caption"></p>
+    </div>
+`;
+document.body.append(lightbox);
+
+const lightboxImage = lightbox.querySelector(".image-lightbox-image");
+const lightboxCaption = lightbox.querySelector(".image-lightbox-caption");
+const lightboxClose = lightbox.querySelector(".image-lightbox-close");
 const tabs = [...document.querySelectorAll(".resource-tab")];
 const grid = document.querySelector("#catalog-grid");
 const title = document.querySelector("#category-title");
 const resultCount = document.querySelector("#result-count");
+
+function openImagePreview(src, label) {
+    lightboxImage.src = src;
+    lightboxImage.alt = label;
+    lightboxCaption.textContent = label;
+    document.body.classList.add("lightbox-open");
+    lightbox.showModal();
+}
+
+function closeImagePreview() {
+    lightbox.close();
+}
 
 function renderCategory(category) {
     const section = library[category] || library.catalog;
@@ -62,19 +93,44 @@ function renderCategory(category) {
     title.textContent = section.label;
     resultCount.textContent = section.items.length;
     grid.setAttribute("aria-labelledby", `tab-${category}`);
-    grid.innerHTML = section.items.map(item => `
-        <article class="catalog-card">
-            <a class="cover-link" target="_blank" rel="noopener noreferrer" href="${item[1]}" aria-label="Open ${item[0]}">
-                <span class="cover"><img src="assets/images/${item[2]}" alt="${item[0]} cover"></span>
-            </a>
-            <div class="catalog-info">
-                <h2>${item[0]}</h2>
-                <p class="year">2025</p>
-                <a class="view-btn" target="_blank" rel="noopener noreferrer" href="https://www.onidisplay.com/contact/">Download <span aria-hidden="true">&#8595;</span></a>
-            </div>
-        </article>
-    `).join("");
+    grid.innerHTML = section.items.map(item => {
+        const imagePath = `assets/images/${item[2]}`;
+        const isImagePreview = item[3] === "image";
+        const coverControl = isImagePreview
+            ? `<button class="cover-link image-preview-trigger" type="button" data-image-src="${imagePath}" data-image-label="${item[0]}" aria-label="Enlarge ${item[0]}">
+                <span class="cover"><img src="${imagePath}" alt="${item[0]}"></span>
+            </button>`
+            : `<a class="cover-link" target="_blank" rel="noopener noreferrer" href="${item[1]}" aria-label="Open ${item[0]}">
+                <span class="cover"><img src="${imagePath}" alt="${item[0]} cover"></span>
+            </a>`;
+
+        return `
+            <article class="catalog-card">
+                ${coverControl}
+                <div class="catalog-info">
+                    <h2>${item[0]}</h2>
+                    <p class="year">2025</p>
+                    <a class="view-btn" target="_blank" rel="noopener noreferrer" href="https://www.onidisplay.com/contact/">Download <span aria-hidden="true">&#8595;</span></a>
+                </div>
+            </article>
+        `;
+    }).join("");
 }
+
+grid.addEventListener("click", event => {
+    const trigger = event.target.closest(".image-preview-trigger");
+    if (!trigger) return;
+    openImagePreview(trigger.dataset.imageSrc, trigger.dataset.imageLabel);
+});
+
+lightboxClose.addEventListener("click", closeImagePreview);
+lightbox.addEventListener("click", event => {
+    if (event.target === lightbox) closeImagePreview();
+});
+lightbox.addEventListener("close", () => {
+    document.body.classList.remove("lightbox-open");
+    lightboxImage.removeAttribute("src");
+});
 
 tabs.forEach((tab, index) => {
     tab.addEventListener("click", () => renderCategory(tab.dataset.category));
