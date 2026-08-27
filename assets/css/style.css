@@ -61,55 +61,68 @@ body {
 .contact-btn:hover {
     opacity: 0.85;
 }
-.catalog-banner {
-    position: relative;
-    width: 100%;
-    height: clamp(330px, 28vw, 722px);
-    overflow: hidden;
-    background: #d8d6d3;
-    color: #fff;
-}
-.catalog-banner > img {
-    display: block;
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    object-position: center;
+
+.resource-tabs {
+    position: sticky;
+    top: 126px;
+    z-index: 9;
+    padding: 14px 0;
+    background: rgba(255, 255, 255, .98);
+    border-bottom: 1px solid var(--line);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, .045);
 }
 
-.catalog-banner-shade {
-    position: absolute;
-    inset: 0;
-    background: linear-gradient(to top, rgba(0, 0, 0, .58) 0, rgba(0, 0, 0, .08) 45%, transparent 70%);
-}
-
-.catalog-banner-content {
-    position: absolute;
-    left: 50%;
-    bottom: 46px;
+.resource-tabs-inner {
     width: 95%;
-    transform: translateX(-50%);
-    text-shadow: 0 2px 18px rgba(0, 0, 0, .28);
+    margin: 0 auto;
 }
 
-.catalog-banner-content p {
-    margin: 0 0 8px;
-    font-size: 15px;
-    line-height: 1;
-    letter-spacing: .28em;
+.resource-tabs [role="tablist"] {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 5px;
+    border: 1px solid #e5e3df;
+    border-radius: 999px;
+    background: #f5f4f1;
 }
 
-.catalog-banner-content h1 {
-    margin: 0;
-    font-size: clamp(38px, 3.15vw, 60px);
-    line-height: 1.05;
-    font-weight: 500;
+.resource-tab {
+    appearance: none;
+    min-width: 126px;
+    padding: 13px 24px;
+    border: 0;
+    border-radius: 999px;
+    background: transparent;
+    color: #626262;
+    font: inherit;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background .2s ease, color .2s ease, box-shadow .2s ease;
 }
+
+.resource-tab:hover {
+    background: #fff;
+    color: var(--text);
+}
+
+.resource-tab.is-active {
+    background: #ffb700;
+    color: #111;
+    box-shadow: 0 4px 12px rgba(187, 132, 0, .2);
+}
+
+.resource-tab:focus-visible {
+    outline: 2px solid var(--gold);
+    outline-offset: 5px;
+}
+
 
 .hero {
     width: 95%;
     margin: 0 auto;
-    padding: 38px 0 0;
+    padding: 32px 0 0;
 }
 
 .hero h1 {
@@ -130,10 +143,12 @@ body {
 
 .catalog-grid {
     width: 95%;
+    min-height: 420px;
 
     margin: 49px auto 80px;
     display: grid;
     grid-template-columns: repeat(4, minmax(0, 1fr));
+    align-content: start;
     column-gap: 8px;
     row-gap: 22px;
 }
@@ -179,7 +194,7 @@ body {
 }
 
 .catalog-card h2 {
-    min-height: 34px;
+    min-height: 52px;
     margin: 0;
     font-size: 18px;
     line-height: 1.45;
@@ -441,7 +456,44 @@ body {
 
 @media(max-width:600px) {
     .header {
+        height: 92px;
         padding: 0 20px;
+    }
+
+    .logo,
+    .logo img {
+        width: 116px;
+    }
+
+    .logo img {
+        height: 116px;
+    }
+
+    .contact-btn {
+        padding: 12px 28px;
+        font-size: 15px;
+    }
+
+    .resource-tabs {
+        top: 92px;
+        padding: 10px 0;
+    }
+
+    .resource-tabs-inner {
+        width: calc(100% - 32px);
+    }
+
+    .resource-tabs [role="tablist"] {
+        width: 100%;
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 4px;
+    }
+
+    .resource-tab {
+        min-width: 0;
+        padding: 11px 8px;
+        font-size: 14px;
     }
 
     .hero,
@@ -450,7 +502,7 @@ body {
     }
 
     .hero {
-        padding-top: 28px;
+        padding-top: 24px;
     }
 
     .hero h1 {
@@ -459,6 +511,7 @@ body {
     }
 
     .catalog-grid {
+        min-height: 0;
         grid-template-columns: 1fr;
         row-gap: 26px;
     }
@@ -476,7 +529,8 @@ body {
 
     .cover img,
     .contact-btn,
-    .view-btn {
+    .view-btn,
+    .resource-tab {
         transition: none;
     }
 }

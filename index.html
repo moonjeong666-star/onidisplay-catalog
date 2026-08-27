@@ -21,25 +21,31 @@
             Contact
         </a>
     </header>
-    
-    <section class="catalog-banner" aria-labelledby="catalog-banner-title">
-        <img src="assets/images/catalog-fengmian.webp" alt="ONI Display product catalog collection">
-        <div class="catalog-banner-shade" aria-hidden="true"></div>
-        <div class="catalog-banner-content">
-            <p>DOWNLOADS</p>
-            <h1 id="catalog-banner-title">PRODUCT CATALOG</h1>
-        </div>
-    </section>
+
+
 
     <main>
 
+        <nav class="resource-tabs" aria-label="Download categories">
+            <div class="resource-tabs-inner">
+                <div role="tablist" aria-label="Catalog file categories">
+                    <button class="resource-tab is-active" id="tab-catalog" role="tab" type="button"
+                        aria-selected="true" aria-controls="catalog-grid" data-category="catalog">Catalog</button>
+                    <button class="resource-tab" id="tab-documents" role="tab" type="button"
+                        aria-selected="false" aria-controls="catalog-grid" data-category="documents">Documents</button>
+                    <button class="resource-tab" id="tab-resources" role="tab" type="button"
+                        aria-selected="false" aria-controls="catalog-grid" data-category="resources">Resources</button>
+                </div>
+            </div>
+        </nav>
+
         <section class="hero">
-            <h1>Catalog</h1>
+            <h1 id="category-title">Catalog</h1>
             <p class="results-count"><span id="result-count">0</span> Results</p>
         </section>
 
 
-        <section class="catalog-grid" aria-label="ONI product catalogs">
+        <section class="catalog-grid" id="catalog-grid" role="tabpanel" aria-labelledby="tab-catalog">
 
         </section>
 
