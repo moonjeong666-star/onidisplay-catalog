@@ -19,17 +19,18 @@ const library = {
             ["ONI Dessert Shop Display Catalog", "assets/pdf/ONI_Shopfitting_Retail_Display_Solutions_for_Dessert_Shops.pdf", "dessert store.webp"],
             ["ONI Mattress & Bedding Retail Portfolio Catalog", "assets/pdf/Mattress&BeddingI_RetailI_Portfolio1.pdf", "Mattress & Bedding Retail Portfolio.webp"],
             ["ONI Wood Grain · Color Chart Catalog", "assets/pdf/ONI_Wood_Grain·Color_Chart_catalog.pdf", "wood grain·color chart.webp"],
-            ["ONI Luxury Production Project Case", "assets/pdf/ONI_Luxry_Production_Project_Case.pdf", "luxry production line project case.webp"],
-            ["What to Prepare for Store Design & Fixture Production", "assets/pdf/What_to_prepare_for_Store_Design&Fixture_Production.pdf", "Store Design & Fixture Production.webp"],
-            ["What ONI Do for Retailers 2026", "assets/pdf/What_ONI_Do_for_Retailers_2026.pdf", "What ONI Do for Retailers 2026.webp"]
+            ["ONI Luxury Production Project Case", "assets/pdf/ONI_Luxry_Production_Project_Case.pdf", "luxry production line project case.webp"]
         ]
     },
     documents: {
         label: "Documents",
         items: [
+            ["What to Prepare for Store Design & Fixture Production", "assets/pdf/What_to_prepare_for_Store_Design&Fixture_Production.pdf", "Store Design & Fixture Production.webp"],
+            ["What ONI Do for Retailers 2026", "assets/pdf/What_ONI_Do_for_Retailers_2026.pdf", "What ONI Do for Retailers 2026.webp"],
             ["Guangzhou ONI Shop Design Price List", "assets/pdf/Guangzhou_ONI_Shop_Design_Price_List.pdf", "Shop Design.webp"],
             ["ONI Commercial Space Design Pricing Guide", "assets/pdf/ONI_Commercial_Space_Design_Pricing_Guide.pdf", "ONI Commercial Space Design Pricing Guide.webp"],
             ["ONI Final Drawing and Material Approval Notice", "assets/pdf/ONI_Final_Drawing_and_Material_Approval_Notice.pdf", "ONI_Final_Drawing_and_Material_Approval_Notice.webp"]
+            
         ]
     },
     resources: {
