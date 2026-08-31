@@ -17,8 +17,8 @@ const library = {
             ["ONI Cinema & Entertainment Retail Fixture Solutions Catalog", "assets/pdf/ONI_Cinema&Entertainment_Retail_Fixture_Solutions.pdf", "cinema&entertainment.webp"],
             ["ONI Wig Shop Display Catalog", "assets/pdf/ONI_Shopfitting_Retail_Display_Solutions_for_Wig_Shops.pdf", "win store.webp"],
             ["ONI Dessert Shop Display Catalog", "assets/pdf/ONI_Shopfitting_Retail_Display_Solutions_for_Dessert_Shops.pdf", "dessert store.webp"],
-            ["ONI Mattress & Bedding Retail Portfolio Catalog", "assets/pdf/Mattress&BeddingI_RetailI_Portfolio1.pdf", "Mattress & Bedding Retail Portfolio.webp"],
-            ["ONI Wood Grain · Color Chart Catalog", "assets/pdf/ONI_Wood_Grain·Color_Chart_catalog.pdf", "wood grain·color chart.webp"],
+            ["ONI Mattress & Bedding Retail Portfolio Catalog", "assets/pdf/Mattress&BeddingI_RetailI_Portfolio1.pdf", "Mattress & Bedding Retail Portfolio.webp"],   
+            ["ONI Southeast Asia Retail Project Portfolio", "assets/pdf/ONI_Southeast_Asia_Retail_Project_Portfolio.pdf", "Southeast_Asia_Retail_Project_Portfolio"],         
             ["ONI Luxury Production Project Case", "assets/pdf/ONI_Luxry_Production_Project_Case.pdf", "luxry production line project case.webp"]
         ]
     },
@@ -29,7 +29,8 @@ const library = {
             ["What ONI Do for Retailers 2026", "assets/pdf/What_ONI_Do_for_Retailers_2026.pdf", "What ONI Do for Retailers 2026.webp"],
             ["Guangzhou ONI Shop Design Price List", "assets/pdf/Guangzhou_ONI_Shop_Design_Price_List.pdf", "Shop Design.webp"],
             ["ONI Commercial Space Design Pricing Guide", "assets/pdf/ONI_Commercial_Space_Design_Pricing_Guide.pdf", "ONI Commercial Space Design Pricing Guide.webp"],
-            ["ONI Final Drawing and Material Approval Notice", "assets/pdf/ONI_Final_Drawing_and_Material_Approval_Notice.pdf", "ONI_Final_Drawing_and_Material_Approval_Notice.webp"]
+            ["ONI Final Drawing and Material Approval Notice", "assets/pdf/ONI_Final_Drawing_and_Material_Approval_Notice.pdf", "ONI_Final_Drawing_and_Material_Approval_Notice.webp"],
+            ["ONI Wood Veneer Melamine HPL Edge Comparison", "assets/pdf/ONI_Wood_Veneer_Melamine_HPL_Edge_Comparison.pdf", "WOOD_VENEER_MELAMINE & HPL"]
         ]
     },
     resources: {
@@ -39,6 +40,12 @@ const library = {
             ["Olivia Business card", "#", "Olivia Business card.jpg", "image"],
             ["Alice Business card", "#", "Alice Business card.jpg", "image"],
             ["Rechel Business card", "#", "Rechel Business card.jpg", "image"]
+        ]
+    },
+    material: {
+        label: "Material",
+        items: [
+            ["ONI Wood Grain · Color Chart Catalog", "assets/pdf/ONI_Wood_Grain·Color_Chart_catalog.pdf", "wood grain·color chart.webp"]
         ]
     }
 };
