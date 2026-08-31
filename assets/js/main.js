@@ -45,7 +45,8 @@ const library = {
     material: {
         label: "Material",
         items: [
-            ["ONI Wood Grain · Color Chart Catalog", "assets/pdf/ONI_Wood_Grain·Color_Chart_catalog.pdf", "wood grain·color chart.webp"]
+            ["ONI Wood Grain · Color Chart Catalog", "assets/pdf/ONI_Wood_Grain·Color_Chart_catalog.pdf", "wood grain·color chart.webp"],
+            ["2026 Salicofi——Zero Silica Quartz Stone", "assets/pdf/2026Salicofi_Zero_Silica_Quartz_Stone.pdf", "Zero-silica quartz stone.webp"]
         ]
     }
 };
