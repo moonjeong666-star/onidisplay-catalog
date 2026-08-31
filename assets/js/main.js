@@ -30,7 +30,7 @@ const library = {
             ["Guangzhou ONI Shop Design Price List", "assets/pdf/Guangzhou_ONI_Shop_Design_Price_List.pdf", "Shop Design.webp"],
             ["ONI Commercial Space Design Pricing Guide", "assets/pdf/ONI_Commercial_Space_Design_Pricing_Guide.pdf", "ONI Commercial Space Design Pricing Guide.webp"],
             ["ONI Final Drawing and Material Approval Notice", "assets/pdf/ONI_Final_Drawing_and_Material_Approval_Notice.pdf", "ONI_Final_Drawing_and_Material_Approval_Notice.webp"],
-            ["ONI Wood Veneer Melamine HPL Edge Comparison", "assets/pdf/ONI_Wood_Veneer_Melamine_HPL_Edge_Comparison.pdf", "WOOD_VENEER_MELAMINE & HPL"]
+            ["ONI Wood Veneer Melamine HPL Edge Comparison", "assets/pdf/ONI_Wood_Veneer_Melamine_HPL_Edge_Comparison.pdf", "WOOD_VENEER_MELAMINE & HPL.webp"]
         ]
     },
     resources: {
