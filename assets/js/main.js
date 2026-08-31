@@ -18,7 +18,7 @@ const library = {
             ["ONI Wig Shop Display Catalog", "assets/pdf/ONI_Shopfitting_Retail_Display_Solutions_for_Wig_Shops.pdf", "win store.webp"],
             ["ONI Dessert Shop Display Catalog", "assets/pdf/ONI_Shopfitting_Retail_Display_Solutions_for_Dessert_Shops.pdf", "dessert store.webp"],
             ["ONI Mattress & Bedding Retail Portfolio Catalog", "assets/pdf/Mattress&BeddingI_RetailI_Portfolio1.pdf", "Mattress & Bedding Retail Portfolio.webp"],   
-            ["ONI Southeast Asia Retail Project Portfolio", "assets/pdf/ONI_Southeast_Asia_Retail_Project_Portfolio.pdf", "Southeast_Asia_Retail_Project_Portfolio"],         
+            ["ONI Southeast Asia Retail Project Portfolio", "assets/pdf/ONI_Southeast_Asia_Retail_Project_Portfolio.pdf", "Southeast_Asia_Retail_Project_Portfolio.webp"],         
             ["ONI Luxury Production Project Case", "assets/pdf/ONI_Luxry_Production_Project_Case.pdf", "luxry production line project case.webp"]
         ]
     },
