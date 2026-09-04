@@ -21,8 +21,8 @@ export default {
       const password = decoded.slice(separator + 1);
 
       if (
-        username !== env.Username ||
-        password !== env.Password
+        username !== "oniadmin" ||
+        password !== "ONI2026test"
       ) {
         return requireLogin();
       }
@@ -44,5 +44,3 @@ function requireLogin() {
     }
   });
 }
-
-//test
