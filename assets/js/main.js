@@ -3,7 +3,6 @@ const library = {
         label: "Catalog",
         items: [
             ["Guangzhou ONI Shopfitting Limited", "assets/pdf/GUANGZHOU_ONI_SHOPFITTING_LIMITED.pdf", "oni company.webp"],
-            ["ONI Restaurant Furniture Catalog", "assets/pdf/ONI_Restaurant_Furniture_Catalog.pdf", "restaurant-cover.webp"],
             ["ONI Shopfitting Clothing Shop Display Catalog", "assets/pdf/ONI_Clothing_Display_Catalog.pdf", "clothing-cover.webp"],
             ["ONI Optical Shop Display Catalog", "assets/pdf/ONI_Optical_Shop_Display_Catalog.pdf", "optical-cover.webp"],
             ["ONI Pharmacy Shop Display Catalog", "assets/pdf/ONI_Pharmacy_Shop_Display_Catalog.pdf", "pharmacy-cover.webp"],
@@ -13,13 +12,14 @@ const library = {
             ["ONI Coffee Shop Display Catalog", "assets/pdf/ONI_Coffee_Shop_Display_Catalog.pdf", "coffee-cover.webp"],
             ["ONI Watch Display Cabinet Catalog", "assets/pdf/ONI_Luxury_Watch_Display_Solutions_Catalog.pdf", "watch-cover.webp"],
             ["ONI Jewelry Showcase Catalog", "assets/pdf/ONI_jewelry_showcase_catalog.pdf", "custom jewelry showcases.webp"],
+            ["ONI Luxury Production Project Case", "assets/pdf/ONI_Luxry_Production_Project_Case.pdf", "luxry production line project case.webp"],
+            ["ONI Southeast Asia Retail Project Portfolio", "assets/pdf/ONI_Southeast_Asia_Retail_Project_Portfolio.pdf", "Southeast_Asia_Retail_Project_Portfolio.webp"],    
             ["ONI Duty Free Project Catalog", "assets/pdf/ONI_Airport_Duty_Free_Project_Portfolio_with_Factory_Cases.pdf", "dury free.webp"],
             ["ONI Cinema & Entertainment Retail Fixture Solutions Catalog", "assets/pdf/ONI_Cinema&Entertainment_Retail_Fixture_Solutions.pdf", "cinema&entertainment.webp"],
+            ["ONI Restaurant Furniture Catalog", "assets/pdf/ONI_Restaurant_Furniture_Catalog.pdf", "restaurant-cover.webp"],
             ["ONI Wig Shop Display Catalog", "assets/pdf/ONI_Shopfitting_Retail_Display_Solutions_for_Wig_Shops.pdf", "win store.webp"],
             ["ONI Dessert Shop Display Catalog", "assets/pdf/ONI_Shopfitting_Retail_Display_Solutions_for_Dessert_Shops.pdf", "dessert store.webp"],
-            ["ONI Mattress & Bedding Retail Portfolio Catalog", "assets/pdf/Mattress&BeddingI_RetailI_Portfolio1.pdf", "Mattress & Bedding Retail Portfolio.webp"],   
-            ["ONI Southeast Asia Retail Project Portfolio", "assets/pdf/ONI_Southeast_Asia_Retail_Project_Portfolio.pdf", "Southeast_Asia_Retail_Project_Portfolio.webp"],         
-            ["ONI Luxury Production Project Case", "assets/pdf/ONI_Luxry_Production_Project_Case.pdf", "luxry production line project case.webp"]
+            ["ONI Mattress & Bedding Retail Portfolio Catalog", "assets/pdf/Mattress&BeddingI_RetailI_Portfolio1.pdf", "Mattress & Bedding Retail Portfolio.webp"]         
         ]
     },
     documents: {
