@@ -22,7 +22,7 @@ export default {
 
       if (
         username !== "oniadmin" ||
-        password !== "ONI2026test"
+        password !== "onishopfitting2026"
       ) {
         return requireLogin();
       }
