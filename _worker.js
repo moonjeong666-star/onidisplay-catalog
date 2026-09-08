@@ -1,4 +1,3 @@
-```javascript
 const BASE = "/customer";
 
 export default {
@@ -46,4 +45,4 @@ export default {
     return env.ASSETS.fetch(request);
   }
 };
-```
+
