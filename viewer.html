@@ -221,26 +221,39 @@
             }
         }
 
-        @media (max-width: 760px) {
+        /* Mobile + tablet: hide the thumbnail sidebar completely so the PDF body gets the full screen. */
+        @media (max-width: 1024px), (pointer: coarse) {
             .toolbar {
-                grid-template-columns: auto minmax(80px, 1fr) auto;
+                grid-template-columns: minmax(0, 1fr) auto;
                 gap: 8px;
+                padding: 0 10px;
             }
 
-            .optional {
-                display: none;
+            .toolbar > .tool-group:first-child,
+            .optional,
+            .sidebar {
+                display: none !important;
             }
 
-            .content {
-                grid-template-columns: 112px 1fr;
+            .content,
+            .content.sidebar-collapsed {
+                grid-template-columns: 1fr;
             }
 
-            .thumb {
-                padding: 9px 8px;
+            .stage {
+                -webkit-overflow-scrolling: touch;
+                overscroll-behavior: contain;
             }
 
-            .thumb canvas {
-                width: 74px;
+            .pages {
+                width: 100%;
+                min-width: 0;
+                gap: 14px;
+                padding: 12px 8px 24px;
+            }
+
+            .page {
+                max-width: 100%;
             }
         }
 
@@ -306,7 +319,6 @@
     <script>
         pdfjsLib.GlobalWorkerOptions.workerSrc = "./pdfs/build/pdf.worker.min.js";
 
-        // NEW: The catalog list passes the PDF path and title through the URL.
         const params = new URLSearchParams(window.location.search);
         const file = params.get("file") || "";
         const title = params.get("title") || "ONI Display Catalog";
@@ -319,6 +331,8 @@
         const pageInput = document.querySelector("#page-input");
         const pageCount = document.querySelector("#page-count");
         const zoomSelect = document.querySelector("#zoom-select");
+        const sidebarToggle = document.querySelector("#sidebar-toggle");
+        const compactDevice = window.matchMedia("(max-width: 1024px), (pointer: coarse)");
 
         let pdfDoc = null;
         let scale = 1;
@@ -329,11 +343,13 @@
         let thumbObserver = null;
         let basePageViewport = null;
         let renderToken = 0;
+        let scrollRaf = 0;
+        let activeThumb = null;
+        const pageCache = new Map();
 
         document.title = title;
         document.querySelector("#catalog-title").textContent = title;
 
-        // NEW: Remove common save/print shortcuts and right-click entry points in the custom viewer.
         document.addEventListener("contextmenu", (event) => event.preventDefault());
         window.addEventListener("keydown", (event) => {
             const key = event.key.toLowerCase();
@@ -342,15 +358,16 @@
             }
         });
 
-        document.querySelector("#sidebar-toggle").addEventListener("click", () => {
-            contentEl.classList.toggle("sidebar-collapsed");
+        sidebarToggle.addEventListener("click", () => {
+            if (!compactDevice.matches) contentEl.classList.toggle("sidebar-collapsed");
         });
 
         document.querySelector("#zoom-out").addEventListener("click", () => changeZoom(-0.25));
         document.querySelector("#zoom-in").addEventListener("click", () => changeZoom(0.25));
-        document.querySelector("#rotate").addEventListener("click", () => {
+        document.querySelector("#rotate").addEventListener("click", async () => {
             rotation = (rotation + 90) % 360;
-            renderPages();
+            await renderPages();
+            scheduleThumbnails(true);
         });
 
         zoomSelect.addEventListener("change", () => renderPages());
@@ -359,8 +376,33 @@
             scrollToPage(pageNumber);
         });
 
-        stage.addEventListener("scroll", updateCurrentPage, { passive: true });
-        window.addEventListener("resize", debounce(renderPages, 180));
+        stage.addEventListener("scroll", () => {
+            if (scrollRaf) return;
+            scrollRaf = requestAnimationFrame(() => {
+                scrollRaf = 0;
+                updateCurrentPage();
+            });
+        }, { passive: true });
+
+        window.addEventListener("resize", debounce(() => {
+            if (!pdfDoc) return;
+            if (zoomSelect.value === "fit-page" || zoomSelect.value === "fit-width") {
+                renderPages();
+            }
+        }, 220));
+
+        const onCompactChange = () => {
+            if (compactDevice.matches) {
+                contentEl.classList.remove("sidebar-collapsed");
+                if (thumbObserver) thumbObserver.disconnect();
+                thumbsEl.innerHTML = "";
+                thumbButtons = [];
+                activeThumb = null;
+            } else if (pdfDoc && !thumbButtons.length) {
+                scheduleThumbnails();
+            }
+        };
+        if (compactDevice.addEventListener) compactDevice.addEventListener("change", onCompactChange);
 
         if (!safePdfPath) {
             pagesEl.innerHTML = '<div class="message">This catalog link is not available.</div>';
@@ -368,119 +410,165 @@
             loadPdf(file);
         }
 
-        // NEW: Load the selected PDF and initialize pages plus thumbnails.
+        function getPageCached(pageNumber) {
+            if (!pageCache.has(pageNumber)) {
+                pageCache.set(pageNumber, pdfDoc.getPage(pageNumber));
+            }
+            return pageCache.get(pageNumber);
+        }
+
+        function getRenderRatio() {
+            const dpr = window.devicePixelRatio || 1;
+            return compactDevice.matches ? Math.min(dpr, 1.2) : Math.min(dpr, 1.5);
+        }
+
         async function loadPdf(url) {
             try {
-                // NEW: Load only what the viewer needs up front so large PDFs open faster.
                 pdfDoc = await pdfjsLib.getDocument({
                     url,
                     disableAutoFetch: true,
-                    disableStream: false
+                    disableStream: false,
+                    rangeChunkSize: 65536
                 }).promise;
-                const firstPage = await pdfDoc.getPage(1);
-                basePageViewport = firstPage.getViewport({ scale: 1, rotation });
+
+                const firstPage = await getPageCached(1);
+                basePageViewport = firstPage.getViewport({ scale: 1, rotation: 0 });
                 pageCount.textContent = pdfDoc.numPages;
                 pageInput.max = String(pdfDoc.numPages);
+
                 await renderPages(firstPage);
-                renderThumbnails();
+                scheduleThumbnails();
             } catch (error) {
+                console.error(error);
                 pagesEl.innerHTML = '<div class="message">The PDF could not be opened.</div>';
             }
         }
 
-        // NEW: Create page canvases. Actual rendering is lazy so large catalogs open faster.
         async function renderPages(firstPage) {
             if (!pdfDoc) return;
 
             const token = ++renderToken;
+            if (pageObserver) pageObserver.disconnect();
             pagesEl.innerHTML = "";
             pageCanvases = [];
-            if (pageObserver) pageObserver.disconnect();
 
             scale = await resolveScale(firstPage);
+            if (token !== renderToken) return;
+
             pageObserver = new IntersectionObserver((entries) => {
                 for (const entry of entries) {
-                    if (entry.isIntersecting) {
-                        renderPageCanvas(entry.target);
-                    }
+                    if (entry.isIntersecting) renderPageCanvas(entry.target);
                 }
             }, {
                 root: stage,
-                rootMargin: "800px 0px",
+                rootMargin: compactDevice.matches ? "350px 0px" : "650px 0px",
                 threshold: 0.01
             });
 
-            for (let pageNumber = 1; pageNumber <= pdfDoc.numPages; pageNumber += 1) {
-                if (token !== renderToken) return;
+            const viewport = basePageViewport || { width: 612, height: 792 };
+            const rotated = rotation === 90 || rotation === 270;
+            const pageWidth = (rotated ? viewport.height : viewport.width) * scale;
+            const pageHeight = (rotated ? viewport.width : viewport.height) * scale;
+            const fragment = document.createDocumentFragment();
 
+            for (let pageNumber = 1; pageNumber <= pdfDoc.numPages; pageNumber += 1) {
                 const wrapper = document.createElement("div");
                 const canvas = document.createElement("canvas");
-                const viewport = basePageViewport || { width: 612, height: 792 };
-                const ratio = window.devicePixelRatio || 1;
-                const rotated = rotation === 90 || rotation === 270;
-                const pageWidth = (rotated ? viewport.height : viewport.width) * scale;
-                const pageHeight = (rotated ? viewport.width : viewport.height) * scale;
 
                 wrapper.className = "page loading";
                 wrapper.dataset.pageNumber = String(pageNumber);
                 wrapper.dataset.scale = String(scale);
                 wrapper.dataset.rotation = String(rotation);
-                canvas.width = Math.floor(pageWidth * ratio);
-                canvas.height = Math.floor(pageHeight * ratio);
-                canvas.style.width = `${pageWidth}px`;
-                canvas.style.height = `${pageHeight}px`;
+                wrapper.style.width = `${pageWidth}px`;
+                wrapper.style.height = `${pageHeight}px`;
+
+                // Important for speed: do not allocate a full-resolution canvas until this page is near the viewport.
+                canvas.style.width = "100%";
+                canvas.style.height = "100%";
 
                 wrapper.appendChild(canvas);
-                pagesEl.appendChild(wrapper);
+                fragment.appendChild(wrapper);
                 pageCanvases.push(wrapper);
-                pageObserver.observe(wrapper);
             }
 
-            renderPageCanvas(pageCanvases[0], firstPage);
+            pagesEl.appendChild(fragment);
+            pageCanvases.forEach((wrapper) => pageObserver.observe(wrapper));
+
+            await renderPageCanvas(pageCanvases[0], firstPage);
             updateCurrentPage();
         }
 
-        // NEW: Render only pages near the visible area.
         async function renderPageCanvas(wrapper, prefetchedPage) {
-            if (!wrapper || wrapper.dataset.rendered === "true") return;
+            if (!wrapper || wrapper.dataset.rendered === "true" || wrapper.dataset.rendering === "true") return;
 
-            wrapper.dataset.rendered = "true";
+            wrapper.dataset.rendering = "true";
             const pageNumber = Number(wrapper.dataset.pageNumber);
-            const canvas = wrapper.querySelector("canvas");
-            const page = prefetchedPage || await pdfDoc.getPage(pageNumber);
-            const viewport = page.getViewport({
-                scale: Number(wrapper.dataset.scale),
-                rotation: Number(wrapper.dataset.rotation)
-            });
-            const context = canvas.getContext("2d");
-            const ratio = window.devicePixelRatio || 1;
-            canvas.width = Math.floor(viewport.width * ratio);
-            canvas.height = Math.floor(viewport.height * ratio);
-            canvas.style.width = `${viewport.width}px`;
-            canvas.style.height = `${viewport.height}px`;
-            context.setTransform(ratio, 0, 0, ratio, 0, 0);
-            await page.render({ canvasContext: context, viewport }).promise;
-            wrapper.classList.remove("loading");
+
+            try {
+                const page = prefetchedPage || await getPageCached(pageNumber);
+                if (!wrapper.isConnected) return;
+
+                const viewport = page.getViewport({
+                    scale: Number(wrapper.dataset.scale),
+                    rotation: Number(wrapper.dataset.rotation)
+                });
+                const canvas = wrapper.querySelector("canvas");
+                const context = canvas.getContext("2d", { alpha: false });
+                const ratio = getRenderRatio();
+
+                wrapper.style.width = `${viewport.width}px`;
+                wrapper.style.height = `${viewport.height}px`;
+                canvas.width = Math.max(1, Math.floor(viewport.width * ratio));
+                canvas.height = Math.max(1, Math.floor(viewport.height * ratio));
+                canvas.style.width = `${viewport.width}px`;
+                canvas.style.height = `${viewport.height}px`;
+                context.setTransform(ratio, 0, 0, ratio, 0, 0);
+
+                await page.render({ canvasContext: context, viewport }).promise;
+                wrapper.dataset.rendered = "true";
+                wrapper.classList.remove("loading");
+                if (pageObserver) pageObserver.unobserve(wrapper);
+            } catch (error) {
+                console.error(`Page ${pageNumber} render failed`, error);
+                wrapper.dataset.rendered = "";
+            } finally {
+                wrapper.dataset.rendering = "";
+            }
         }
 
-        // NEW: Build the left thumbnail column immediately, then render thumbnail images lazily.
+        function scheduleThumbnails(force = false) {
+            if (!pdfDoc || compactDevice.matches) return;
+
+            const run = () => {
+                if (force || !thumbButtons.length) renderThumbnails();
+            };
+
+            if ("requestIdleCallback" in window) {
+                requestIdleCallback(run, { timeout: 900 });
+            } else {
+                setTimeout(run, 120);
+            }
+        }
+
         function renderThumbnails() {
+            if (!pdfDoc || compactDevice.matches) return;
+
+            if (thumbObserver) thumbObserver.disconnect();
             thumbsEl.innerHTML = "";
             thumbButtons = [];
-            if (thumbObserver) thumbObserver.disconnect();
+            activeThumb = null;
 
             thumbObserver = new IntersectionObserver((entries) => {
                 for (const entry of entries) {
-                    if (entry.isIntersecting) {
-                        renderThumbnailCanvas(entry.target);
-                    }
+                    if (entry.isIntersecting) renderThumbnailCanvas(entry.target);
                 }
             }, {
                 root: thumbsEl,
-                rootMargin: "500px 0px",
+                rootMargin: "220px 0px",
                 threshold: 0.01
             });
 
+            const fragment = document.createDocumentFragment();
             for (let pageNumber = 1; pageNumber <= pdfDoc.numPages; pageNumber += 1) {
                 const button = document.createElement("button");
                 const canvas = document.createElement("canvas");
@@ -492,58 +580,79 @@
                 button.addEventListener("click", () => scrollToPage(pageNumber));
                 label.textContent = pageNumber;
                 button.append(canvas, label);
-                thumbsEl.appendChild(button);
+                fragment.appendChild(button);
                 thumbButtons.push(button);
-                thumbObserver.observe(button);
             }
 
+            thumbsEl.appendChild(fragment);
+            thumbButtons.forEach((button) => thumbObserver.observe(button));
             renderThumbnailCanvas(thumbButtons[0]);
             updateCurrentPage();
         }
 
-        // NEW: Render only thumbnail images that are visible or near the visible area.
         async function renderThumbnailCanvas(button) {
-            if (!button || button.dataset.rendered === "true") return;
+            if (!button || button.dataset.rendered === "true" || button.dataset.rendering === "true") return;
 
-            button.dataset.rendered = "true";
+            button.dataset.rendering = "true";
             const pageNumber = Number(button.dataset.pageNumber);
-            const canvas = button.querySelector("canvas");
-            const page = await pdfDoc.getPage(pageNumber);
-            const viewport = page.getViewport({ scale: 0.18, rotation });
-            const context = canvas.getContext("2d");
-            const ratio = window.devicePixelRatio || 1;
-            canvas.width = Math.floor(viewport.width * ratio);
-            canvas.height = Math.floor(viewport.height * ratio);
-            canvas.style.width = `${viewport.width}px`;
-            canvas.style.height = `${viewport.height}px`;
-            context.setTransform(ratio, 0, 0, ratio, 0, 0);
-            await page.render({ canvasContext: context, viewport }).promise;
+
+            try {
+                const page = await getPageCached(pageNumber);
+                if (!button.isConnected) return;
+
+                const canvas = button.querySelector("canvas");
+                const viewport = page.getViewport({ scale: 0.16, rotation });
+                const context = canvas.getContext("2d", { alpha: false });
+                const ratio = Math.min(window.devicePixelRatio || 1, 1.25);
+
+                canvas.width = Math.max(1, Math.floor(viewport.width * ratio));
+                canvas.height = Math.max(1, Math.floor(viewport.height * ratio));
+                canvas.style.width = `${viewport.width}px`;
+                canvas.style.height = `${viewport.height}px`;
+                context.setTransform(ratio, 0, 0, ratio, 0, 0);
+
+                await page.render({ canvasContext: context, viewport }).promise;
+                button.dataset.rendered = "true";
+                if (thumbObserver) thumbObserver.unobserve(button);
+            } catch (error) {
+                console.error(`Thumbnail ${pageNumber} render failed`, error);
+                button.dataset.rendered = "";
+            } finally {
+                button.dataset.rendering = "";
+            }
         }
 
-        // NEW: Pick a comfortable opening zoom, like the browser PDF viewer does.
         function resolveScale(firstPage) {
             const selected = zoomSelect.value;
             if (selected !== "fit-page" && selected !== "fit-width") return Number(selected);
 
-            const viewport = (firstPage ? firstPage.getViewport({ scale: 1, rotation }) : basePageViewport) || { width: 612, height: 792 };
-            const horizontalPadding = 96;
-            const verticalPadding = 96;
-            const availableWidth = Math.max(320, stage.clientWidth - horizontalPadding);
-            const availableHeight = Math.max(320, stage.clientHeight - verticalPadding);
+            const viewport = (firstPage ? firstPage.getViewport({ scale: 1, rotation }) : null) ||
+                (basePageViewport ? {
+                    width: (rotation === 90 || rotation === 270) ? basePageViewport.height : basePageViewport.width,
+                    height: (rotation === 90 || rotation === 270) ? basePageViewport.width : basePageViewport.height
+                } : { width: 612, height: 792 });
+
+            const horizontalPadding = compactDevice.matches ? 16 : 96;
+            const verticalPadding = compactDevice.matches ? 28 : 96;
+            const availableWidth = Math.max(240, stage.clientWidth - horizontalPadding);
+            const availableHeight = Math.max(240, stage.clientHeight - verticalPadding);
             const widthScale = availableWidth / viewport.width;
             const heightScale = availableHeight / viewport.height;
             const bestScale = selected === "fit-width" ? widthScale : Math.min(widthScale, heightScale);
+
             return Math.min(1.6, Math.max(0.25, bestScale));
         }
 
         function changeZoom(delta) {
-            const current = zoomSelect.value === "fit-page" || zoomSelect.value === "fit-width" ? scale : Number(zoomSelect.value);
+            const current = (zoomSelect.value === "fit-page" || zoomSelect.value === "fit-width") ? scale : Number(zoomSelect.value);
             const next = clamp(Math.round((current + delta) * 100) / 100, 0.5, 2);
             let option = [...zoomSelect.options].find((item) => Number(item.value) === next);
+
             if (!option) {
                 option = new Option(`${Math.round(next * 100)}%`, String(next));
-                zoomSelect.add(option, zoomSelect.options[zoomSelect.options.length - 1]);
+                zoomSelect.add(option, zoomSelect.options[zoomSelect.options.length - 2]);
             }
+
             zoomSelect.value = String(next);
             renderPages();
         }
@@ -551,35 +660,43 @@
         function scrollToPage(pageNumber) {
             const target = pageCanvases[pageNumber - 1];
             if (!target) return;
-            target.scrollIntoView({ block: "start" });
+
+            stage.scrollTo({ top: Math.max(0, target.offsetTop - 12), behavior: "auto" });
             pageInput.value = String(pageNumber);
             setActiveThumb(pageNumber);
+            renderPageCanvas(target);
         }
 
         function updateCurrentPage() {
             if (!pageCanvases.length) return;
 
-            const stageTop = stage.getBoundingClientRect().top;
-            let current = 1;
-            let smallestDistance = Infinity;
+            const targetY = stage.scrollTop + 30;
+            let low = 0;
+            let high = pageCanvases.length - 1;
+            let index = 0;
 
-            for (const page of pageCanvases) {
-                const pageNumber = Number(page.dataset.pageNumber);
-                const distance = Math.abs(page.getBoundingClientRect().top - stageTop - 24);
-                if (distance < smallestDistance) {
-                    smallestDistance = distance;
-                    current = pageNumber;
+            while (low <= high) {
+                const mid = (low + high) >> 1;
+                if (pageCanvases[mid].offsetTop <= targetY) {
+                    index = mid;
+                    low = mid + 1;
+                } else {
+                    high = mid - 1;
                 }
             }
 
+            const current = index + 1;
             pageInput.value = String(current);
             setActiveThumb(current);
         }
 
         function setActiveThumb(pageNumber) {
-            for (const button of thumbButtons) {
-                button.classList.toggle("active", Number(button.dataset.pageNumber) === pageNumber);
-            }
+            if (!thumbButtons.length) return;
+            const next = thumbButtons[pageNumber - 1];
+            if (!next || next === activeThumb) return;
+            if (activeThumb) activeThumb.classList.remove("active");
+            next.classList.add("active");
+            activeThumb = next;
         }
 
         function clamp(value, min, max) {
@@ -588,9 +705,9 @@
 
         function debounce(fn, delay) {
             let timer = 0;
-            return () => {
+            return (...args) => {
                 clearTimeout(timer);
-                timer = setTimeout(fn, delay);
+                timer = setTimeout(() => fn(...args), delay);
             };
         }
     </script>
