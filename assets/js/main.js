@@ -104,11 +104,13 @@ function renderCategory(category) {
     grid.innerHTML = section.items.map(item => {
         const imagePath = `assets/images/${item[2]}`;
         const isImagePreview = item[3] === "image";
+        // NEW: PDF files now open through the custom viewer instead of the browser's built-in PDF toolbar.
+        const viewerUrl = `viewer.html?file=${encodeURIComponent(item[1])}&title=${encodeURIComponent(item[0])}`;
         const coverControl = isImagePreview
             ? `<button class="cover-link image-preview-trigger" type="button" data-image-src="${imagePath}" data-image-label="${item[0]}" aria-label="Enlarge ${item[0]}">
                 <span class="cover"><img src="${imagePath}" alt="${item[0]}"></span>
             </button>`
-            : `<a class="cover-link" target="_blank" rel="noopener noreferrer" href="${item[1]}" aria-label="Open ${item[0]}">
+            : `<a class="cover-link" target="_blank" rel="noopener noreferrer" href="${viewerUrl}" aria-label="Open ${item[0]}">
                 <span class="cover"><img src="${imagePath}" alt="${item[0]} cover"></span>
             </a>`;
 
