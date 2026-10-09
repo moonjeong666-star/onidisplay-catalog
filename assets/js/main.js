@@ -104,8 +104,7 @@ function renderCategory(category) {
     grid.innerHTML = section.items.map(item => {
         const imagePath = `assets/images/${item[2]}`;
         const isImagePreview = item[3] === "image";
-        // NEW: PDF files now open through the custom viewer instead of the browser's built-in PDF toolbar.
-        const viewerUrl = `viewer.html?file=${encodeURIComponent(item[1])}&title=${encodeURIComponent(item[0])}`;
+        const viewerUrl = `image-viewer.html?file=${encodeURIComponent(item[1])}&title=${encodeURIComponent(item[0])}&cover=${encodeURIComponent(imagePath)}`;
         const coverControl = isImagePreview
             ? `<button class="cover-link image-preview-trigger" type="button" data-image-src="${imagePath}" data-image-label="${item[0]}" aria-label="Enlarge ${item[0]}">
                 <span class="cover"><img src="${imagePath}" alt="${item[0]}"></span>
@@ -120,7 +119,7 @@ function renderCategory(category) {
                 <div class="catalog-info">
                     <h2>${item[0]}</h2>
                     <p class="year">2025</p>
-                    <a class="view-btn" target="_blank" rel="noopener noreferrer" href="https://www.onidisplay.com/contact/">Download <span aria-hidden="true">&#8595;</span></a>
+                    <a class="view-btn" target="_blank" rel="noopener noreferrer" href="https://www.onidisplay.com/contact/">Contact us <span aria-hidden="true">&#8594;</span></a>
                 </div>
             </article>
         `;

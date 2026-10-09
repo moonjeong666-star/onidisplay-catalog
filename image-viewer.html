@@ -1,0 +1,649 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+    <meta name="robots" content="noindex, nofollow">
+    <link rel="icon" href="data:,">
+    <title>ONI Display Catalog</title>
+    <style>
+        :root {
+            color-scheme: dark;
+            --bg: #202124;
+            --panel: #292a2d;
+            --line: #44464b;
+            --text: #f2f2f2;
+            --muted: #b7b9bf;
+            --accent: #d8b36a;
+            --toolbar-height: 58px;
+        }
+
+        * { box-sizing: border-box; }
+
+        html,
+        body {
+            height: 100%;
+            margin: 0;
+            overflow: hidden;
+        }
+
+        body {
+            display: grid;
+            grid-template-rows: var(--toolbar-height) minmax(0, 1fr);
+            background: var(--bg);
+            color: var(--text);
+            font-family: Arial, Helvetica, sans-serif;
+        }
+
+        button,
+        input { font: inherit; }
+
+        button,
+        .back-link {
+            display: inline-grid;
+            min-width: 40px;
+            height: 40px;
+            place-items: center;
+            border: 1px solid transparent;
+            border-radius: 8px;
+            background: transparent;
+            color: var(--text);
+            cursor: pointer;
+            text-decoration: none;
+        }
+
+        button:hover,
+        .back-link:hover { background: #3a3b3f; }
+
+        button:focus-visible,
+        .back-link:focus-visible,
+        input:focus-visible,
+        .thumb:focus-visible {
+            outline: 3px solid var(--accent);
+            outline-offset: 2px;
+        }
+
+        .toolbar {
+            z-index: 20;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            min-width: 0;
+            padding: max(8px, env(safe-area-inset-top)) 14px 8px;
+            border-bottom: 1px solid var(--line);
+            background: var(--panel);
+            box-shadow: 0 2px 14px rgb(0 0 0 / .22);
+        }
+
+        .back-link {
+            flex: 0 0 auto;
+            font-size: 25px;
+            line-height: 1;
+        }
+
+        .catalog-title {
+            min-width: 0;
+            flex: 1;
+            margin: 0;
+            overflow: hidden;
+            font-size: 15px;
+            font-weight: 600;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .page-control,
+        .zoom-control {
+            display: flex;
+            flex: 0 0 auto;
+            align-items: center;
+            gap: 5px;
+            color: var(--muted);
+            font-size: 13px;
+        }
+
+        .page-control input {
+            width: 48px;
+            height: 34px;
+            border: 1px solid var(--line);
+            border-radius: 7px;
+            background: #202124;
+            color: var(--text);
+            text-align: center;
+        }
+
+        .zoom-control button {
+            min-width: 38px;
+            height: 38px;
+            font-size: 21px;
+        }
+
+        .zoom-value {
+            min-width: 42px;
+            text-align: center;
+        }
+
+        .viewer-shell {
+            display: grid;
+            grid-template-columns: 176px minmax(0, 1fr);
+            min-height: 0;
+        }
+
+        .thumbnails {
+            min-height: 0;
+            overflow: auto;
+            padding: 14px 12px 28px;
+            border-right: 1px solid var(--line);
+            background: #252629;
+            scrollbar-color: #5b5d62 transparent;
+        }
+
+        .thumb {
+            display: grid;
+            width: 100%;
+            height: auto;
+            margin: 0 0 14px;
+            padding: 7px;
+            gap: 7px;
+            justify-items: center;
+            border: 1px solid transparent;
+            border-radius: 9px;
+            background: transparent;
+            color: var(--muted);
+        }
+
+        .thumb:hover { background: #333438; }
+
+        .thumb.is-active {
+            border-color: var(--accent);
+            background: #353535;
+            color: var(--text);
+        }
+
+        .thumb img {
+            display: block;
+            width: 126px;
+            max-width: 100%;
+            height: auto;
+            border-radius: 2px;
+            background: #fff;
+            box-shadow: 0 2px 9px rgb(0 0 0 / .35);
+        }
+
+        .thumb span { font-size: 12px; }
+
+        .stage {
+            position: relative;
+            min-width: 0;
+            min-height: 0;
+            overflow: auto;
+            overscroll-behavior: contain;
+            scrollbar-color: #5b5d62 transparent;
+        }
+
+        .pages {
+            display: flex;
+            min-width: 100%;
+            min-height: 100%;
+            padding: 28px;
+            align-items: center;
+            flex-direction: column;
+            gap: 22px;
+        }
+
+        .page {
+            position: relative;
+            flex: 0 0 auto;
+            max-width: none;
+            overflow: hidden;
+            background: #f2f2f2;
+            box-shadow: 0 4px 20px rgb(0 0 0 / .42);
+            contain: layout paint;
+        }
+
+        .page::after {
+            position: absolute;
+            inset: 0;
+            content: "";
+            background: linear-gradient(100deg, #ededed 30%, #fafafa 48%, #ededed 66%);
+            background-size: 300% 100%;
+            animation: shimmer 1.25s ease-in-out infinite;
+        }
+
+        .page.is-loaded::after,
+        .page.is-error::after { display: none; }
+
+        .page img {
+            display: block;
+            width: 100%;
+            height: auto;
+            opacity: 0;
+            user-select: none;
+            -webkit-user-drag: none;
+            transition: opacity .18s ease-out;
+        }
+
+        .page.is-loaded img { opacity: 1; }
+
+        .page-number {
+            position: absolute;
+            right: 8px;
+            bottom: 8px;
+            z-index: 2;
+            padding: 3px 7px;
+            border-radius: 999px;
+            background: rgb(0 0 0 / .58);
+            color: #fff;
+            font-size: 11px;
+        }
+
+        .message {
+            display: grid;
+            min-height: 100%;
+            padding: 24px;
+            place-items: center;
+            color: var(--muted);
+            text-align: center;
+        }
+
+        .opening {
+            position: absolute;
+            z-index: 10;
+            inset: 0;
+            display: grid;
+            padding: 24px;
+            place-content: center;
+            justify-items: center;
+            gap: 18px;
+            background: var(--bg);
+            color: var(--muted);
+            transition: opacity .2s ease-out;
+        }
+
+        .opening.is-hidden {
+            pointer-events: none;
+            opacity: 0;
+        }
+
+        .opening-cover {
+            display: block;
+            width: min(240px, 48vw);
+            max-height: 44vh;
+            object-fit: contain;
+            border-radius: 3px;
+            box-shadow: 0 7px 30px rgb(0 0 0 / .4);
+        }
+
+        .opening-status {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .spinner {
+            width: 18px;
+            height: 18px;
+            border: 2px solid #5b5d62;
+            border-top-color: var(--accent);
+            border-radius: 50%;
+            animation: spin .8s linear infinite;
+        }
+
+        @keyframes shimmer { to { background-position: -150% 0; } }
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        @media (max-width: 760px) {
+            :root { --toolbar-height: calc(56px + env(safe-area-inset-top)); }
+            .toolbar {
+                gap: 4px;
+                padding-right: 6px;
+                padding-left: 6px;
+            }
+            .catalog-title { font-size: 13px; }
+            .viewer-shell { grid-template-columns: minmax(0, 1fr); }
+            .thumbnails,
+            .zoom-value { display: none; }
+            .page-control { gap: 3px; }
+            .page-control input { width: 40px; }
+            .zoom-control { gap: 0; }
+            .zoom-control button { min-width: 36px; }
+            .pages {
+                padding: 12px 12px max(22px, env(safe-area-inset-bottom));
+                gap: 12px;
+            }
+            .page { box-shadow: 0 2px 12px rgb(0 0 0 / .35); }
+            .page-number { display: none; }
+        }
+
+        @media (max-width: 410px) {
+            .catalog-title { max-width: 72px; }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            *,
+            *::before,
+            *::after {
+                scroll-behavior: auto !important;
+                animation-duration: .01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: .01ms !important;
+            }
+        }
+
+        @media print {
+            .viewer-shell,
+            .toolbar { display: none !important; }
+            body::before {
+                display: block;
+                padding: 24px;
+                background: #fff;
+                color: #111;
+                content: "Printing is disabled for this catalog viewer.";
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="toolbar">
+        <a class="back-link" href="./" aria-label="Back to catalog">&#8249;</a>
+        <h1 class="catalog-title" id="catalog-title">ONI Display Catalog</h1>
+        <div class="page-control" aria-label="Page navigation">
+            <input id="page-input" type="number" min="1" value="1" inputmode="numeric" aria-label="Current page">
+            <span>/</span><span id="page-count">0</span>
+        </div>
+        <div class="zoom-control" aria-label="Zoom controls">
+            <button id="zoom-out" type="button" aria-label="Zoom out">&#8722;</button>
+            <span class="zoom-value" id="zoom-value">100%</span>
+            <button id="zoom-in" type="button" aria-label="Zoom in">+</button>
+        </div>
+    </header>
+
+    <main class="viewer-shell">
+        <aside class="thumbnails" id="thumbnails" aria-label="Page thumbnails"></aside>
+        <section class="stage" id="stage" aria-label="Catalog pages">
+            <div class="opening" id="opening">
+                <div class="opening-status"><span class="spinner" aria-hidden="true"></span><span>Opening catalog...</span></div>
+            </div>
+            <div class="pages" id="pages"></div>
+        </section>
+    </main>
+
+    <script>
+        const params = new URLSearchParams(window.location.search);
+        const file = params.get("file") || "";
+        const title = params.get("title") || "ONI Display Catalog";
+        const cover = params.get("cover") || "";
+        const validFile = /^assets\/pdf\/[^/\\]+\.pdf$/i.test(file) && !file.includes("..");
+        const validCover = /^assets\/images\/[^/\\]+\.(?:webp|png|jpe?g)$/i.test(cover) && !cover.includes("..");
+
+        const compactQuery = window.matchMedia("(max-width: 760px)");
+        const stage = document.querySelector("#stage");
+        const pagesEl = document.querySelector("#pages");
+        const thumbnailsEl = document.querySelector("#thumbnails");
+        const openingEl = document.querySelector("#opening");
+        const titleEl = document.querySelector("#catalog-title");
+        const pageInput = document.querySelector("#page-input");
+        const pageCount = document.querySelector("#page-count");
+        const zoomValue = document.querySelector("#zoom-value");
+
+        let manifest = null;
+        let pageElements = [];
+        let thumbElements = [];
+        let activeThumb = null;
+        let imageObserver = null;
+        let thumbObserver = null;
+        let zoom = 1;
+        let scrollFrame = 0;
+        let resizeTimer = 0;
+
+        document.title = title;
+        titleEl.textContent = title;
+
+        if (validCover) {
+            const coverImage = document.createElement("img");
+            coverImage.className = "opening-cover";
+            coverImage.src = cover;
+            coverImage.alt = "";
+            openingEl.prepend(coverImage);
+        }
+
+        document.addEventListener("contextmenu", event => {
+            if (event.target.closest(".page")) event.preventDefault();
+        });
+        document.addEventListener("keydown", event => {
+            const key = event.key.toLowerCase();
+            if ((event.ctrlKey || event.metaKey) && (key === "s" || key === "p")) event.preventDefault();
+        });
+
+        document.querySelector("#zoom-out").addEventListener("click", () => setZoom(zoom - 0.15));
+        document.querySelector("#zoom-in").addEventListener("click", () => setZoom(zoom + 0.15));
+        pageInput.addEventListener("change", () => {
+            const pageNumber = clamp(Number(pageInput.value), 1, manifest?.pageCount || 1);
+            scrollToPage(pageNumber);
+        });
+        stage.addEventListener("scroll", () => {
+            if (scrollFrame) return;
+            scrollFrame = requestAnimationFrame(() => {
+                scrollFrame = 0;
+                updateCurrentPage();
+            });
+        }, { passive: true });
+        window.addEventListener("resize", () => {
+            clearTimeout(resizeTimer);
+            resizeTimer = setTimeout(updatePageWidths, 160);
+        }, { passive: true });
+
+        async function loadCatalog() {
+            if (!validFile) {
+                showError("This catalog link is invalid.");
+                return;
+            }
+
+            const filename = file.split("/").pop();
+            const catalogId = filename.replace(/\.pdf$/i, "");
+            const catalogBase = new URL(`assets/catalog-pages/${encodeURIComponent(catalogId)}/`, window.location.href);
+
+            try {
+                const response = await fetch(new URL("manifest.json", catalogBase));
+                if (!response.ok) throw new Error(`Manifest request returned ${response.status}`);
+                const data = await response.json();
+                if (!Array.isArray(data.pages) || !data.pages.length) throw new Error("Manifest has no pages");
+
+                manifest = {
+                    ...data,
+                    pageCount: data.pages.length,
+                    pages: data.pages.map(page => ({
+                        ...page,
+                        src: new URL(page.src, catalogBase).href,
+                        thumb: new URL(page.thumb || page.src, catalogBase).href
+                    }))
+                };
+                pageCount.textContent = String(manifest.pageCount);
+                pageInput.max = String(manifest.pageCount);
+                renderPages();
+                renderThumbnails();
+            } catch (error) {
+                console.error(error);
+                showError("The catalog could not be opened. Please try again later.");
+            }
+        }
+
+        function renderPages() {
+            const fragment = document.createDocumentFragment();
+            pageElements = manifest.pages.map((page, index) => {
+                const pageNumber = index + 1;
+                const wrapper = document.createElement("article");
+                const image = document.createElement("img");
+                const label = document.createElement("span");
+
+                wrapper.className = "page";
+                wrapper.dataset.pageNumber = String(pageNumber);
+                wrapper.style.aspectRatio = `${page.width} / ${page.height}`;
+                image.alt = `${title}, page ${pageNumber}`;
+                image.dataset.src = page.src;
+                image.decoding = "async";
+                image.draggable = false;
+                if (pageNumber === 1) image.fetchPriority = "high";
+                label.className = "page-number";
+                label.textContent = String(pageNumber);
+                wrapper.append(image, label);
+                fragment.appendChild(wrapper);
+                return wrapper;
+            });
+
+            pagesEl.replaceChildren(fragment);
+            updatePageWidths();
+            imageObserver = new IntersectionObserver(entries => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) loadPageImage(entry.target);
+                });
+            }, {
+                root: stage,
+                rootMargin: compactQuery.matches ? "1000px 0px" : "1300px 0px",
+                threshold: 0.01
+            });
+            pageElements.forEach(page => imageObserver.observe(page));
+            loadPageImage(pageElements[0]);
+        }
+
+        function loadPageImage(wrapper) {
+            if (!wrapper || wrapper.dataset.loading === "true" || wrapper.dataset.loaded === "true") return;
+            wrapper.dataset.loading = "true";
+            const image = wrapper.querySelector("img");
+            image.addEventListener("load", () => {
+                wrapper.dataset.loaded = "true";
+                wrapper.classList.add("is-loaded");
+                imageObserver?.unobserve(wrapper);
+                if (wrapper.dataset.pageNumber === "1") hideOpening();
+            }, { once: true });
+            image.addEventListener("error", () => {
+                wrapper.classList.add("is-error");
+                if (wrapper.dataset.pageNumber === "1") showError("The first page could not be loaded.");
+            }, { once: true });
+            image.src = image.dataset.src;
+        }
+
+        function renderThumbnails() {
+            if (compactQuery.matches) return;
+            const fragment = document.createDocumentFragment();
+            thumbElements = manifest.pages.map((page, index) => {
+                const pageNumber = index + 1;
+                const button = document.createElement("button");
+                const image = document.createElement("img");
+                const label = document.createElement("span");
+                button.className = "thumb";
+                button.type = "button";
+                button.dataset.pageNumber = String(pageNumber);
+                button.setAttribute("aria-label", `Go to page ${pageNumber}`);
+                button.addEventListener("click", () => scrollToPage(pageNumber));
+                image.alt = "";
+                image.dataset.src = page.thumb;
+                image.decoding = "async";
+                label.textContent = String(pageNumber);
+                button.append(image, label);
+                fragment.appendChild(button);
+                return button;
+            });
+            thumbnailsEl.replaceChildren(fragment);
+
+            thumbObserver = new IntersectionObserver(entries => {
+                entries.forEach(entry => {
+                    if (!entry.isIntersecting) return;
+                    const image = entry.target.querySelector("img");
+                    if (!image.src) image.src = image.dataset.src;
+                    thumbObserver.unobserve(entry.target);
+                });
+            }, { root: thumbnailsEl, rootMargin: "300px 0px", threshold: 0.01 });
+            thumbElements.forEach(thumb => thumbObserver.observe(thumb));
+            setActiveThumb(1);
+        }
+
+        function updatePageWidths() {
+            if (!manifest || !pageElements.length) return;
+            const gutter = compactQuery.matches ? 24 : 56;
+            const available = Math.max(280, stage.clientWidth - gutter);
+            const widthCap = Math.min(1120, available);
+            pageElements.forEach((element, index) => {
+                const naturalWidth = Number(manifest.pages[index].width) || widthCap;
+                element.style.width = `${Math.round(Math.min(naturalWidth, widthCap) * zoom)}px`;
+            });
+        }
+
+        function setZoom(value) {
+            if (!manifest) return;
+            const currentPage = Number(pageInput.value) || 1;
+            zoom = clamp(Math.round(value * 100) / 100, 0.7, 2);
+            zoomValue.textContent = `${Math.round(zoom * 100)}%`;
+            updatePageWidths();
+            requestAnimationFrame(() => scrollToPage(currentPage));
+        }
+
+        function scrollToPage(pageNumber) {
+            const target = pageElements[pageNumber - 1];
+            if (!target) return;
+            stage.scrollTo({
+                top: Math.max(0, target.offsetTop - 12),
+                left: Math.max(0, target.offsetLeft - 12),
+                behavior: "auto"
+            });
+            pageInput.value = String(pageNumber);
+            setActiveThumb(pageNumber);
+            loadPageImage(target);
+        }
+
+        function updateCurrentPage() {
+            if (!pageElements.length) return;
+            const targetY = stage.scrollTop + Math.min(stage.clientHeight * .35, 240);
+            let low = 0;
+            let high = pageElements.length - 1;
+            let index = 0;
+            while (low <= high) {
+                const middle = (low + high) >> 1;
+                if (pageElements[middle].offsetTop <= targetY) {
+                    index = middle;
+                    low = middle + 1;
+                } else {
+                    high = middle - 1;
+                }
+            }
+            const pageNumber = index + 1;
+            pageInput.value = String(pageNumber);
+            setActiveThumb(pageNumber);
+        }
+
+        function setActiveThumb(pageNumber) {
+            const next = thumbElements[pageNumber - 1];
+            if (!next || next === activeThumb) return;
+            activeThumb?.classList.remove("is-active");
+            next.classList.add("is-active");
+            activeThumb = next;
+            const top = next.offsetTop;
+            const bottom = top + next.offsetHeight;
+            if (top < thumbnailsEl.scrollTop || bottom > thumbnailsEl.scrollTop + thumbnailsEl.clientHeight) {
+                next.scrollIntoView({ block: "nearest" });
+            }
+        }
+
+        function hideOpening() {
+            openingEl.classList.add("is-hidden");
+            setTimeout(() => openingEl.remove(), 220);
+        }
+
+        function showError(message) {
+            openingEl.remove();
+            pagesEl.innerHTML = "";
+            const error = document.createElement("div");
+            error.className = "message";
+            error.textContent = message;
+            pagesEl.append(error);
+        }
+
+        function clamp(value, minimum, maximum) {
+            const number = Number.isFinite(value) ? value : minimum;
+            return Math.max(minimum, Math.min(maximum, number));
+        }
+
+        loadCatalog();
+    </script>
+</body>
+</html>
