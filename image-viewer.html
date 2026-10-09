@@ -250,11 +250,11 @@
             position: absolute;
             z-index: 10;
             inset: 0;
-            display: grid;
-            padding: 24px;
-            place-content: center;
-            justify-items: center;
-            gap: 18px;
+            display: flex;
+            padding: 28px;
+            align-items: flex-start;
+            justify-content: center;
+            overflow: auto;
             background: var(--bg);
             color: var(--muted);
             transition: opacity .2s ease-out;
@@ -267,11 +267,10 @@
 
         .opening-cover {
             display: block;
-            width: min(240px, 48vw);
-            max-height: 44vh;
-            object-fit: contain;
-            border-radius: 3px;
-            box-shadow: 0 7px 30px rgb(0 0 0 / .4);
+            width: min(1120px, 100%);
+            height: auto;
+            flex: 0 0 auto;
+            box-shadow: 0 4px 20px rgb(0 0 0 / .42);
         }
 
         @keyframes shimmer { to { background-position: -150% 0; } }
@@ -295,6 +294,7 @@
                 padding: 12px 12px max(22px, env(safe-area-inset-bottom));
                 gap: 12px;
             }
+            .opening { padding: 12px; }
             .page { box-shadow: 0 2px 12px rgb(0 0 0 / .35); }
             .page-number { display: none; }
         }
@@ -354,9 +354,12 @@
         const params = new URLSearchParams(window.location.search);
         const file = params.get("file") || "";
         const title = params.get("title") || "ONI Display Catalog";
-        const cover = params.get("cover") || "";
         const validFile = /^assets\/pdf\/[^/\\]+\.pdf$/i.test(file) && !file.includes("..");
-        const validCover = /^assets\/images\/[^/\\]+\.(?:webp|png|jpe?g)$/i.test(cover) && !cover.includes("..");
+        const filename = validFile ? file.split("/").pop() : "";
+        const catalogId = filename.replace(/\.pdf$/i, "");
+        const catalogBase = validFile
+            ? new URL(`assets/catalog-pages/${encodeURIComponent(catalogId)}/`, window.location.href)
+            : null;
 
         const compactQuery = window.matchMedia("(max-width: 760px)");
         const stage = document.querySelector("#stage");
@@ -381,10 +384,10 @@
         document.title = title;
         titleEl.textContent = title;
 
-        if (validCover) {
+        if (catalogBase) {
             const coverImage = document.createElement("img");
             coverImage.className = "opening-cover";
-            coverImage.src = cover;
+            coverImage.src = new URL("page-001.webp", catalogBase).href;
             coverImage.alt = "";
             openingEl.prepend(coverImage);
         }
@@ -420,10 +423,6 @@
                 showError("This catalog link is invalid.");
                 return;
             }
-
-            const filename = file.split("/").pop();
-            const catalogId = filename.replace(/\.pdf$/i, "");
-            const catalogBase = new URL(`assets/catalog-pages/${encodeURIComponent(catalogId)}/`, window.location.href);
 
             try {
                 const response = await fetch(new URL("manifest.json", catalogBase));
