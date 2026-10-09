@@ -274,23 +274,7 @@
             box-shadow: 0 7px 30px rgb(0 0 0 / .4);
         }
 
-        .opening-status {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .spinner {
-            width: 18px;
-            height: 18px;
-            border: 2px solid #5b5d62;
-            border-top-color: var(--accent);
-            border-radius: 50%;
-            animation: spin .8s linear infinite;
-        }
-
         @keyframes shimmer { to { background-position: -150% 0; } }
-        @keyframes spin { to { transform: rotate(360deg); } }
 
         @media (max-width: 760px) {
             :root { --toolbar-height: calc(56px + env(safe-area-inset-top)); }
@@ -361,9 +345,7 @@
     <main class="viewer-shell">
         <aside class="thumbnails" id="thumbnails" aria-label="Page thumbnails"></aside>
         <section class="stage" id="stage" aria-label="Catalog pages">
-            <div class="opening" id="opening">
-                <div class="opening-status"><span class="spinner" aria-hidden="true"></span><span>Opening catalog...</span></div>
-            </div>
+            <div class="opening" id="opening"></div>
             <div class="pages" id="pages"></div>
         </section>
     </main>
