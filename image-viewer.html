@@ -503,7 +503,7 @@
                 wrapper.className = "page";
                 wrapper.dataset.pageNumber = String(pageNumber);
                 wrapper.style.aspectRatio = `${page.width} / ${page.height}`;
-                image.alt = `${title}, page ${pageNumber}`;
+                image.alt = `${titleEl.textContent}, page ${pageNumber}`;
                 image.dataset.src = page.src;
                 image.decoding = "async";
                 image.draggable = false;
