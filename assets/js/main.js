@@ -104,7 +104,12 @@ function renderCategory(category) {
     grid.innerHTML = section.items.map(item => {
         const imagePath = `assets/images/${item[2]}`;
         const isImagePreview = item[3] === "image";
-        const viewerUrl = `image-viewer.html?file=${encodeURIComponent(item[1])}&title=${encodeURIComponent(item[0])}&cover=${encodeURIComponent(imagePath)}`;
+        const catalogSlug = item[0]
+            .toLowerCase()
+            .replace(/&/g, "and")
+            .replace(/[^a-z0-9]+/g, "-")
+            .replace(/^-|-$/g, "");
+        const viewerUrl = `${catalogSlug}/#${catalogSlug}`;
         const coverControl = isImagePreview
             ? `<button class="cover-link image-preview-trigger" type="button" data-image-src="${imagePath}" data-image-label="${item[0]}" aria-label="Enlarge ${item[0]}">
                 <span class="cover"><img src="${imagePath}" alt="${item[0]}"></span>
